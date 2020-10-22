@@ -32,5 +32,5 @@ The score is calculated like this :
   - you have 10 try to find the right combination
   - you start with 10 points and for each validated combination, your score is discredited of 1 point
   
-So, if you find the combination at the 3rd try, you will win with 7 points and if you win at the 1Oth try, you will have only one point.
+So, if you find the combination at the 3rd try, you will win with 7 points and if you win at the 10th try, you will have only one point.
 If you loose, you will have no points, but your score is saved.
