@@ -1,43 +1,41 @@
-
-"""
- Mastermind Thinker demo
-
- Very simple game of mastermind - trying out Thinker for Python
- By Rasmus Westerlin, Apps'n Downs, December 2017
-
- Developed for Python 3.6
-"""
-
+#ipmort des classes necessaires au programme
 import tkinter as tk
 import random
 import time
 import sys
 
+#initialisation de la fenetre tkinter
 root = tk.Tk()
 
 frame = tk.Frame(root)
 canvas = tk.Canvas(frame, width=400,height=560, highlightthickness=0,highlightbackground="black", relief=tk.FLAT,bd=0)
 
-liste_couleurs = ['#ffd200','#3cb4e6','red','green','#e6007e','#03234b']
+#declaration de la liste des differentes couleurs du jeu
+# a savoir : jaune, bleu, rouge, vert, rose, bleu foncé (modifiable)
+liste_couleurs = ['#ffd200','#3cb4e6','#ff0000','#00ff00','#e6007e','#03234b']
 
-position = 0
-speed = 2
-
-nbLignesJeu = 11
-nbValeursLigne = 4
+#definition du nombre de lignes de jeu (nb lignes essai + 1 ligne resultat)
+nbLignesJeu = 11 #ici 10 lignes de jeu + 1 ligne resultat
+#nombre de valeurs a trouver par ligne
+nbValeursLigne = 4 #ici 4, donc combinaison de 4 couleurs
+#definition de la taille et de l'espacement entre les cercles
 tailleValeur = 40
 paddingValeur = 50
 
 row = 0
 cpos = 0
 
+#recuperation du nom du joueur passe en argument de la ligne de commande qui a ou vert cette fenetre du jeu
 joueur = str(sys.argv[1])
+
+#initialisation de la valeur score
 score = 0
 
 selectColors = []
 
 colorpicks = [[-1 for i in range(nbValeursLigne)] for j in range(nbLignesJeu)]
 
+#definitions des actions du joueur
 def userAction():
     canvas.unbind('<space>')
     canvas.bind('<Left>', lambda _: selectPos(-1))
@@ -53,6 +51,8 @@ def userInAction():
     canvas.unbind("<Down>")
     canvas.unbind("<Return>")
 
+#generation aleatoire du code couleur a deviner
+#une couleur peut apparaitrer maximum 1x par combinaison
 def createCode():
     selection = [x for x in range(len(liste_couleurs))]
     code = []
@@ -71,19 +71,10 @@ def initRow():
     UniquementCouleurOK = 0
 
 
-def Scores():
-    newPage = tk.Toplevel(root)
-    newPage.title("Scores")
-    newPage.geometry("400x400")
-    import pandas as pd
-    scores = pd.read_csv("scores_mastermind.csv", sep=';')
-    MAXscores = scores.nlargest(10, 'Score').to_string(index=False)
-    nb_parties = len(scores)
-    texte = "Total de parties jouées depuis la création du jeu : " + str(nb_parties)
-    tk.Label(newPage, text =texte).pack()
-    tk.Label(newPage, text ="\n10 meilleurs scores : ",  font = ("Arial", 14, "bold")).pack()
-    tk.Label(newPage, text =str(MAXscores)).pack()
-    
+#fonction qui ouvre une fenetre en cas de defaite
+#disparait automatiquement au bout de 8 secondes, comme la fenetre du jeu (retour au menu)
+#append le csv des scores avec le pseudo et un score de 0 car defaite
+#et affiche les 10 meilleurs scores
 def defaite():
     global row, CouleurEtPositionOK, score, joueur
     newPage1 = tk.Toplevel(root)
@@ -108,6 +99,10 @@ def defaite():
     newPage1.after(8000, newPage1.destroy)
     root.after(8000, root.destroy)
         
+#fonction qui ouvre une fenetre en cas de victoire
+#disparait automatiquement au bout de 8 secondes, comme la fenetre du jeu (retour au menu)
+#append le csv des scores avec le pseudo et un score de 0 car defaite
+#et affiche les 10 meilleurs scores
 def victoire():
     global row, CouleurEtPositionOK, score, joueur
     newPage = tk.Toplevel(root)
@@ -133,7 +128,8 @@ def victoire():
     newPage.after(8000, newPage.destroy)
     root.after(8000, root.destroy)
 
-    
+#initialisation de la fenetre du jeu
+#chaque cercle de position a deviner prend une couleur blanche et le curseur revient a la premiere ligne
 def initGame():
     global row, cpos, colorpicks, codedColor
     canvas.itemconfig(board[row][cpos],width=0)
@@ -189,13 +185,18 @@ def selectPos(increment):
     if cpos >= nbValeursLigne: cpos = 0
     canvas.itemconfig(board[row][cpos],width=1)
 
+#fonction pour changer la couleur de la case selectionnee
 def switchColor(increment):
     colorpicks[row][cpos] += increment
     if colorpicks[row][cpos] > len(liste_couleurs)-1: colorpicks[row][cpos] = 0
     if colorpicks[row][cpos] < 0: colorpicks[row][cpos] = len(liste_couleurs)-1
     canvas.itemconfig(board[row][cpos], fill=liste_couleurs[colorpicks[row][cpos]])
 
-
+#fonction poiur changer de ligne apres validation de la combinaison
+#tant qu'une valeur est manquante (couleur non renseigne), alors on affiche un message dans la console
+#on affiche en console le nombre de valeurs couleur ET position OK et le nombre de valeur uniquement couleur OK
+#dans l'interface, on met en vert si position + couleur OK
+#en orange si juste couleur OK
 def switchrow():
     global row, CouleurEtPositionOK, UniquementCouleurOK, colorpicks
     for i in range(nbValeursLigne):
@@ -228,6 +229,7 @@ def switchrow():
         for i in range(nbValeursLigne):
             canvas.itemconfig(board[nbLignesJeu-1][i], fill=liste_couleurs[codedColor[i]])
         userInAction()
+        #ici on affiche les fenetres defaite ou victoire en fonction du résultat
         if row == 9:
             if CouleurEtPositionOK ==4:
                 victoire()

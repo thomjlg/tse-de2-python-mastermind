@@ -1,13 +1,11 @@
-# This will import all the widgets 
-# and modules which are available in 
-# tkinter and ttk module 
+#importation des differents modules necessaires pour faire fonctionner le programme
 from tkinter import *
 from tkinter.ttk import *
 import os
 
-#Best solution 
-#import mastermind     # import the script in mastermind.py
-
+#definition d'une classe pour afficher une fenetre de scores après un clic sur un bouton
+#avec la librairies pandas, lecture du fichier csv des scores, et affichage des 10 meilleurs scores
+#affichage du nombre total de parties jouées depuis le début : nombre de lignes du fichier csv
 class WindowScores(Toplevel): 
       
     def __init__(self, master = None): 
@@ -23,19 +21,7 @@ class WindowScores(Toplevel):
         Label(self, text ="\n10 meilleurs scores : ",  font = ("Arial", 14, "bold")).pack() 
         Label(self, text =str(MAXscores)).pack()
         
-        
-class Game(Toplevel): 
-      
-    def __init__(self, master = None):
-        
-        super().__init__(master = master) 
-        print("here")
-        self.title("Partie en cours - MASTERMIND") 
-        self.geometry("1000x700")
-      
-
-
-
+#definition d'une fonction qui execute récupère le nom d'utilisateur saisi et qui execute le fihcier python qui lance le jeu (en passant le username en parametre)
 def callback(event):
     global username
     username = J1.get()
@@ -48,10 +34,15 @@ def callback(event):
 '''
 MENU DU JEU
 '''
-
+#création d'une fenetre tkinter (pour le menu du jeu)
 master = Tk() 
 master.geometry("550x500") 
-master.title("Mastermind - Le Jeu") 
+master.title("Mastermind - Le Jeu")
+#creation du contenu de la fenetre tkinter
+#label avec le nom du jeu
+#zone de texte pour saisie pseudo
+#bouton pour lancer le jeu (appelle la fonction callback)
+#bouton pour afficher les scores (appelle la classe WindowScores)
 Label(master, text ="MASTERMIND",  font = ("Arial", 20, "bold")).pack( pady = (10)) 
 J1L = Label(master, text ="Nom du Joueur :")
 J1L.pack(side="top", pady=(30, 0))
