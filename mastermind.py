@@ -6,6 +6,7 @@ import sys
 
 #initialisation de la fenetre tkinter
 root = tk.Tk()
+root.withdraw()
 
 frame = tk.Frame(root)
 canvas = tk.Canvas(frame, width=400,height=560, highlightthickness=0,highlightbackground="black", relief=tk.FLAT,bd=0)
@@ -26,7 +27,7 @@ row = 0
 cpos = 0
 
 #recuperation du nom du joueur passe en argument de la ligne de commande qui a ou vert cette fenetre du jeu
-joueur = str(sys.argv[1])
+#joueur = str(sys.argv[1])
 
 #initialisation de la valeur score
 score = 0
@@ -35,6 +36,16 @@ selectColors = []
 
 colorpicks = [[-1 for i in range(nbValeursLigne)] for j in range(nbLignesJeu)]
 
+def prend_joueur(username):
+    global joueur
+    joueur = username 
+   
+def show_msg(msg):
+    newPage3 = tk.Toplevel(root)
+    newPage3.title("Valeur manquante")
+    tk.Label(newPage3, text = msg,  font = ("Arial", 13, "bold")).pack( pady = (10),padx = (20))
+    tk.Button(newPage3, text="Merci pour l'information", command=newPage3.destroy).pack(pady=10)
+    
 #definitions des actions du joueur
 def userAction():
     canvas.unbind('<space>')
@@ -69,7 +80,6 @@ def initRow():
     selectColors = [x for x in range(len(liste_couleurs))]
     CouleurEtPositionOK = 0
     UniquementCouleurOK = 0
-
 
 #fonction qui ouvre une fenetre en cas de defaite
 #disparait automatiquement au bout de 8 secondes, comme la fenetre du jeu (retour au menu)
@@ -145,7 +155,6 @@ def initGame():
     userAction()
     codedColor = createCode()
     initRow()
-    #Scores()
     
     
 
@@ -201,13 +210,13 @@ def switchrow():
     global row, CouleurEtPositionOK, UniquementCouleurOK, colorpicks
     for i in range(nbValeursLigne):
         if colorpicks[row][i] == -1:
-            print("Attention, une couleur n'a pas été saisie en {},{}".format(row,i))
+            show_msg("Attention, une couleur n'a pas été saisie sur la ligne {}, à la position {}.".format(row+1,i+1))
             return False
         for j in range(nbValeursLigne):
             if (j==i and codedColor[j]==colorpicks[row][i]): CouleurEtPositionOK += 1
             if (j!=i and codedColor[j]==colorpicks[row][i]): UniquementCouleurOK += 1
     if CouleurEtPositionOK < nbValeursLigne and row < nbLignesJeu-2:
-        print("CouleurEtPositionOK:{}, UniquementCouleurOK:{}".format(CouleurEtPositionOK,UniquementCouleurOK))
+        print(" - Bonne couleur et bonne position : {}\n - Uniquement la bonne couleur : {}".format(CouleurEtPositionOK,UniquementCouleurOK))
         for i in range(CouleurEtPositionOK):
             canvas.itemconfig(response[row][i], fill="green")
         for i in range(UniquementCouleurOK):
@@ -218,7 +227,7 @@ def switchrow():
         initRow()
         return False
     else: #VICTOIRE ou DEFAITE FINALE si ROW=9
-        print("Row{} CouleurEtPositionOK{} and UniquementCouleurOK{}".format(row,CouleurEtPositionOK,UniquementCouleurOK))
+        print("Ligne {}\n - Bonne couleur et bonne position : {} \n - Uniquement la bonne couleur :{}".format(row,CouleurEtPositionOK,UniquementCouleurOK))
         output = True
         if row == nbLignesJeu-2:
             output = False
@@ -240,16 +249,18 @@ def switchrow():
         return output
 
 
+def main_game():
+    root.deiconify()
+    frame.pack()
+    canvas.pack()
 
-frame.pack()
-canvas.pack()
+    root.title("Partie en cours - MASTERMIND")
 
-root.title("Partie en cours - MASTERMIND")
-
-canvas.focus_set()
-userAction()
-canvas.bind("<space>", lambda _: initGame())
+    canvas.focus_set()
+    userAction()
+    canvas.bind("<space>", lambda _: initGame())
 
 
-root.mainloop()
+    root.mainloop()
+   
 
